@@ -18,7 +18,7 @@
 //  It tries to intelligently choose the frame cache size depending on the image and memory situation with the goal to lower CPU usage for smaller ones, lower memory usage for larger ones and always deliver frames for high performant play-back.
 //  Note: `posterImage`, `size`, `loopCount`, `delayTimes` and `frameCount` don't change after successful initialization.
 //
-@interface FLAnimatedImage : NSObject
+@interface FLAnimatedImage : NSObject <NSCoding>
 
 @property (nonatomic, strong, readonly) UIImage *posterImage; // Guaranteed to be loaded; usually equivalent to `-imageLazilyCachedAtIndex:0`
 @property (nonatomic, assign, readonly) CGSize size; // The `.posterImage`'s `.size`

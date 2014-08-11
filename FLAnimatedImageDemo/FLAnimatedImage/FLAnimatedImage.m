@@ -308,6 +308,54 @@ typedef NS_ENUM(NSUInteger, FLAnimatedImageFrameCacheSize) {
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        _data = [aDecoder decodeObjectForKey:@"_data"];
+        _imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)_data, NULL);
+        // Early return on failure!
+        if (!_imageSource) {
+            NSLog(@"Error: Failed to `CGImageSourceCreateWithData` for animated GIF data %@", _data);
+            return nil;
+        }
+        _loopCount = [[aDecoder decodeObjectForKey:@"_loopCount"] integerValue];
+        _cachedFrames = [aDecoder decodeObjectForKey:@"_cachedFrames"];
+        _cachedFrameIndexes = [aDecoder decodeObjectForKey:@"_cachedFrameIndexes"];
+        _requestedFrameIndexes = [aDecoder decodeObjectForKey:@"_requestedFrameIndexes"];
+        
+        _posterImage = [aDecoder decodeObjectForKey:@"_posterImage"];
+        _size = _posterImage.size;
+        _posterImageFrameIndex = [[aDecoder decodeObjectForKey:@"_posterImageFrameIndex"] integerValue];
+        
+        _delayTimes = [aDecoder decodeObjectForKey:@"_delayTimes"];
+        _frameCount = [[aDecoder decodeObjectForKey:@"_frameCount"] integerValue];
+        _frameCacheSizeOptimal = [[aDecoder decodeObjectForKey:@"_frameCacheSizeOptimal"] integerValue];
+        _allFramesIndexSet = [aDecoder decodeObjectForKey:@"_allFramesIndexSet"];
+        
+        // System Memory Warnings Notification Handler
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+        
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:_data forKey:@"_data"];
+    [aCoder encodeObject:[NSNumber numberWithInteger:_loopCount] forKey:@"_loopCount"];
+    [aCoder encodeObject:_cachedFrames forKey:@"_cachedFrames"];
+    [aCoder encodeObject:_cachedFrameIndexes forKey:@"_cachedFrameIndexes"];
+    [aCoder encodeObject:_requestedFrameIndexes forKey:@"_requestedFrameIndexes"];
+    
+    [aCoder encodeObject:_posterImage forKey:@"_posterImage"];
+    [aCoder encodeObject:[NSNumber numberWithInteger:_posterImageFrameIndex] forKey:@"_posterImageFrameIndex"];
+    
+    [aCoder encodeObject:_delayTimes forKey:@"_delayTimes"];
+    [aCoder encodeObject:[NSNumber numberWithInteger:_frameCount] forKey:@"_frameCount"];
+    [aCoder encodeObject:[NSNumber numberWithInteger:_frameCacheSizeOptimal] forKey:@"_frameCacheSizeOptimal"];
+    [aCoder encodeObject:_allFramesIndexSet forKey:@"_allFramesIndexSet"];
+}
 
 - (void)dealloc
 {
